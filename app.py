@@ -41,18 +41,15 @@ st.markdown("""
         box-shadow: none !important;
     }
 
-    /* --- 2. TABS STYLING (Override default Red) --- */
-    /* Active Tab Text Color */
+    /* --- 2. TABS STYLING --- */
     .stTabs [aria-selected="true"] {
         color: var(--primary-color) !important;
     }
-    /* Active Tab Underline Bar */
     .stTabs [data-baseweb="tab-highlight"] {
         background-color: var(--primary-color) !important;
     }
 
-    /* --- 3. INPUT FIELDS STYLING (Override default Red focus) --- */
-    /* Number Input Focus Border */
+    /* --- 3. INPUT FIELDS STYLING --- */
     div[data-baseweb="input"] :focus-within {
         border-color: var(--primary-color) !important;
         caret-color: var(--primary-color) !important;
@@ -64,24 +61,21 @@ st.markdown("""
     /* --- 4. GENERAL HIGHLIGHTS --- */
     a { color: var(--primary-color) !important; }
 
-    /* --- 5. TABLE STYLING: FORCE CENTER ALIGNMENT --- */
+    /* --- 5. TABLE STYLING --- */
     [data-testid="stDataFrame"] { width: 100%; }
     
-    /* Header Cells */
     [data-testid="stDataFrame"] [role="columnheader"] {
         text-align: center !important;
         justify-content: center !important;
         display: flex !important;
     }
     
-    /* Data Cells */
     [data-testid="stDataFrame"] [role="gridcell"] {
         text-align: center !important;
         justify-content: center !important;
         display: flex !important;
     }
     
-    /* Generic row content alignment */
     [data-testid="stDataFrame"] div[role="row"] {
         justify-content: center !important;
     }
@@ -104,8 +98,9 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
     if base_width <= 0 or base_length <= 0: return None
     
     # 1. SETUP FIGURE WITH 2 SUBPLOTS
+    # hspace=0.02 brings them very close together
     fig, (ax_top, ax_front) = plt.subplots(2, 1, figsize=(12, 14), 
-                                           gridspec_kw={'height_ratios': [4, 1], 'hspace': 0.05})
+                                           gridspec_kw={'height_ratios': [4, 1], 'hspace': 0.02})
 
     # ============================================
     # TOP VIEW DRAWING (ax_top)
@@ -114,7 +109,8 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
     BEARER_W = 90
     
     ax_top.set_xlim(-300, base_length + 300)
-    ax_top.set_ylim(-450, base_width + 300) 
+    # Reduced bottom limit from -450 to -300 to remove white space
+    ax_top.set_ylim(-300, base_width + 300) 
     ax_top.axis('off')
     ax_top.set_title(title, fontsize=14, weight='bold', color='#333', pad=20)
     
@@ -125,7 +121,8 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
     for i, c in enumerate(centers):
         bx = c - (BEARER_W / 2)
         ax_top.add_patch(patches.Rectangle((bx, 0), BEARER_W, base_width, linewidth=0.5, edgecolor='black', facecolor='#D7CCC8'))
-        ax_top.axvline(x=c, color='black', linestyle='--', alpha=0.3, linewidth=0.5)
+        # REMOVED: Dotted center line inside bearer
+        # ax_top.axvline(x=c, color='black', linestyle='--', alpha=0.3, linewidth=0.5) 
         ax_top.text(c, base_width + 40, f"B{i+1}", ha='center', fontsize=9, fontweight='bold', color='#5D4037')
 
     # External Dimensions (Top)
@@ -146,17 +143,21 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
             y_gap = -100 
             ax_top.annotate("", xy=(b_left_edge, y_gap), xytext=(b_right_edge, y_gap), arrowprops=dict(arrowstyle='<->', color='#C0392B', lw=1.0))
             mid_gap = (b_left_edge + b_right_edge) / 2
-            ax_top.text(mid_gap, y_gap - 40, f"Gap: {gap_val:.0f}", ha='center', va='top', fontsize=8, color='#C0392B', fontweight='bold')
+            # REMOVED LABEL TEXT "Gap:", keeping only number
+            ax_top.text(mid_gap, y_gap - 40, f"{gap_val:.0f}", ha='center', va='top', fontsize=8, color='#C0392B', fontweight='bold')
 
             # B. C/C
             c1 = centers[i]
             c2 = centers[i+1]
             y_cc = -250 
-            ax_top.plot([c1, c1], [0, y_cc], color='#2980B9', linestyle=':', linewidth=0.5, alpha=0.5)
-            ax_top.plot([c2, c2], [0, y_cc], color='#2980B9', linestyle=':', linewidth=0.5, alpha=0.5)
+            # REMOVED: Dotted extension lines dropping down
+            # ax_top.plot([c1, c1], [0, y_cc], color='#2980B9', linestyle=':', linewidth=0.5, alpha=0.5)
+            # ax_top.plot([c2, c2], [0, y_cc], color='#2980B9', linestyle=':', linewidth=0.5, alpha=0.5)
+            
             ax_top.annotate("", xy=(c1, y_cc), xytext=(c2, y_cc), arrowprops=dict(arrowstyle='<->', color='#2980B9', lw=1.0))
             mid_cc = (c1 + c2) / 2
-            ax_top.text(mid_cc, y_cc - 40, f"C/C: {cc_val:.0f}", ha='center', va='top', fontsize=8, color='#2980B9', fontweight='bold')
+            # REMOVED LABEL TEXT "C/C:", keeping only number
+            ax_top.text(mid_cc, y_cc - 40, f"{cc_val:.0f}", ha='center', va='top', fontsize=8, color='#2980B9', fontweight='bold')
 
     # Panels (Top) - And prepare color map for Front View
     base_palette = ['#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B', '#E377C2', '#BCBD22', '#17BECF']
@@ -198,7 +199,8 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
     TOTAL_H = TOTAL_TIMBER_H + PLY_THICK
     
     ax_front.set_xlim(-300, base_length + 300)
-    ax_front.set_ylim(-100, 200) 
+    # Reduced top limit from 200 to 150 to remove white space
+    ax_front.set_ylim(-100, 150) 
     ax_front.axis('off')
 
     # --- 1. Draw Structure (Bearers & Fascia) ---
@@ -261,6 +263,7 @@ def split_panel_length(total_len, width, start_x, row_name, sheet_max=2400):
         cut_len = min(remaining, sheet_max)
         table_rows.append({
             "Qty": 1,
+            # Force No Decimals (.0f)
             "Size [mm]": f"{cut_len:.0f} x {width:.0f}", 
             "raw_w": width,
             "raw_l": cut_len
