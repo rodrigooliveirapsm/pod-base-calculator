@@ -42,20 +42,28 @@ st.markdown("""
     }
 
     /* --- 2. TABS STYLING --- */
+    /* Active Tab Text */
     .stTabs [aria-selected="true"] {
         color: var(--primary-color) !important;
     }
+    /* Tab Hover State (Fixing the red hover) */
+    button[data-baseweb="tab"]:hover {
+        color: var(--primary-color) !important;
+    }
+    /* Active Tab Underline */
     .stTabs [data-baseweb="tab-highlight"] {
         background-color: var(--primary-color) !important;
     }
 
     /* --- 3. INPUT FIELDS STYLING --- */
-    div[data-baseweb="input"] :focus-within {
+    /* This overrides the red border AND the red glowing ring */
+    div[data-baseweb="base-input"]:focus-within {
         border-color: var(--primary-color) !important;
-        caret-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 1px var(--primary-color) !important;
     }
-    div[data-baseweb="base-input"] {
-        border-color: #e0e0e0;
+    /* Caret color (the blinking cursor) */
+    div[data-baseweb="base-input"] input {
+        caret-color: var(--primary-color) !important;
     }
     
     /* --- 4. GENERAL HIGHLIGHTS --- */
@@ -357,14 +365,14 @@ st.title("🔨 Pod Ply Base Calculator")
 with st.container():
     st.write("---")
     c1, c2, c3 = st.columns([1,1,1]) 
-    with c1: base_length = st.number_input("Base Length [mm]", value=3504, step=10, min_value=0)
-    with c2: base_width = st.number_input("Base Width [mm]", value=3114, step=10, min_value=0)
-    with c3: num_bearers = st.number_input("Number of Bearers", value=7, step=1, min_value=0)
+    with c1: base_length = st.number_input("Base Length [mm]", value=None, step=10, min_value=0)
+    with c2: base_width = st.number_input("Base Width [mm]", value=None, step=10, min_value=0)
+    with c3: num_bearers = st.number_input("Number of Bearers", value=None, step=1, min_value=0)
     st.write("---")
 
 if st.button("Generate Cut Plan", type="primary", use_container_width=True):
-    if base_width == 0 or base_length == 0 or num_bearers == 0:
-        st.warning("⚠️ Please enter all dimensions. Fields cannot be 0.")
+    if not base_width or not base_length or not num_bearers:
+        st.warning("⚠️ Please enter all dimensions. Fields cannot be empty or 0.")
     elif num_bearers < 2:
         st.error("❌ You must have at least 2 bearers.")
     else:
