@@ -121,8 +121,6 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
     for i, c in enumerate(centers):
         bx = c - (BEARER_W / 2)
         ax_top.add_patch(patches.Rectangle((bx, 0), BEARER_W, base_width, linewidth=0.5, edgecolor='black', facecolor='#D7CCC8'))
-        # REMOVED: Dotted center line inside bearer
-        # ax_top.axvline(x=c, color='black', linestyle='--', alpha=0.3, linewidth=0.5) 
         ax_top.text(c, base_width + 40, f"B{i+1}", ha='center', fontsize=9, fontweight='bold', color='#5D4037')
 
     # External Dimensions (Top)
@@ -143,20 +141,14 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
             y_gap = -100 
             ax_top.annotate("", xy=(b_left_edge, y_gap), xytext=(b_right_edge, y_gap), arrowprops=dict(arrowstyle='<->', color='#C0392B', lw=1.0))
             mid_gap = (b_left_edge + b_right_edge) / 2
-            # REMOVED LABEL TEXT "Gap:", keeping only number
             ax_top.text(mid_gap, y_gap - 40, f"{gap_val:.0f}", ha='center', va='top', fontsize=8, color='#C0392B', fontweight='bold')
 
             # B. C/C
             c1 = centers[i]
             c2 = centers[i+1]
             y_cc = -250 
-            # REMOVED: Dotted extension lines dropping down
-            # ax_top.plot([c1, c1], [0, y_cc], color='#2980B9', linestyle=':', linewidth=0.5, alpha=0.5)
-            # ax_top.plot([c2, c2], [0, y_cc], color='#2980B9', linestyle=':', linewidth=0.5, alpha=0.5)
-            
             ax_top.annotate("", xy=(c1, y_cc), xytext=(c2, y_cc), arrowprops=dict(arrowstyle='<->', color='#2980B9', lw=1.0))
             mid_cc = (c1 + c2) / 2
-            # REMOVED LABEL TEXT "C/C:", keeping only number
             ax_top.text(mid_cc, y_cc - 40, f"{cc_val:.0f}", ha='center', va='top', fontsize=8, color='#2980B9', fontweight='bold')
 
     # Panels (Top) - And prepare color map for Front View
@@ -383,7 +375,7 @@ if st.button("Generate Cut Plan", type="primary", use_container_width=True):
             tab_vis, tab_data = st.tabs(["🖼️ Visual Plans", "📊 Cut Lists"])
             with tab_vis:
                 st.info("💡 **Modular** shows the smallest panels that can be cut for that configuration. **Optimized** shows the largest panel that can be retrieved from a new sheet.")
-                sub_v1, sub_v2 = st.tabs(["Option A: Modular (Offcuts)", "Option B: Optimized (Full Sheets)"])
+                sub_v1, sub_v2 = st.tabs(["Modular Option", "Optimized Option"])
                 with sub_v1:
                     fig1 = draw_pod_diagram(base_width, base_length, data['centers'], data['modular_plot'], "Modular Layout", data['gap'], data['spacing_cc'])
                     if fig1: st.pyplot(fig1)
@@ -393,9 +385,9 @@ if st.button("Generate Cut Plan", type="primary", use_container_width=True):
             with tab_data:
                 c1, c2 = st.columns(2)
                 with c1:
-                    st.subheader("A. Modular List")
+                    st.subheader("Modular Option")
                     cols = ['Panel ID', 'Qty', 'Size [mm]']
                     st.dataframe(data['modular_df'][cols], hide_index=True, use_container_width=True)
                 with c2:
-                    st.subheader("B. Optimized List")
+                    st.subheader("Optimized Option")
                     st.dataframe(data['optimized_df'][cols], hide_index=True, use_container_width=True)
