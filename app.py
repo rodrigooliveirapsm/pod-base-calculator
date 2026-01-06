@@ -12,15 +12,60 @@ st.set_page_config(page_title="Pod Ply Base Calculator", page_icon="🔨", layou
 # --- CUSTOM CSS ---
 st.markdown("""
     <style>
-    .big-font { font-size:20px !important; }
-    h1 { color: #2E86C1; } 
-    .stButton>button { border-radius: 8px; font-weight: bold; }
-    
-    /* TABLE STYLING: FORCE CENTER ALIGNMENT EVERYWHERE */
-    /* Target the DataFrame container */
-    [data-testid="stDataFrame"] {
-        width: 100%;
+    /* GLOBAL VARIABLES */
+    :root {
+        --primary-color: #009CEB; /* Light blue */
+        --primary-color-dark: #0086c9; 
     }
+
+    .big-font { font-size:20px !important; }
+    h1 { color: #2E86C1; }
+
+    /* --- 1. BUTTON STYLING --- */
+    .stButton>button {
+        border-radius: 8px;
+        font-weight: bold;
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+        color: white !important;
+    }
+    .stButton>button:hover {
+        background-color: var(--primary-color-dark) !important;
+        border-color: var(--primary-color-dark) !important;
+        color: white !important;
+    }
+    .stButton>button:active, .stButton>button:focus {
+        background-color: var(--primary-color-dark) !important;
+        border-color: var(--primary-color-dark) !important;
+        color: white !important;
+        box-shadow: none !important;
+    }
+
+    /* --- 2. TABS STYLING (Override default Red) --- */
+    /* Active Tab Text Color */
+    .stTabs [aria-selected="true"] {
+        color: var(--primary-color) !important;
+    }
+    /* Active Tab Underline Bar */
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: var(--primary-color) !important;
+    }
+
+    /* --- 3. INPUT FIELDS STYLING (Override default Red focus) --- */
+    /* Number Input Focus Border */
+    div[data-baseweb="input"] :focus-within {
+        border-color: var(--primary-color) !important;
+        caret-color: var(--primary-color) !important;
+    }
+    div[data-baseweb="base-input"] {
+        border-color: #e0e0e0;
+    }
+    
+    /* --- 4. GENERAL HIGHLIGHTS --- */
+    a { color: var(--primary-color) !important; }
+
+    /* --- 5. TABLE STYLING: FORCE CENTER ALIGNMENT --- */
+    [data-testid="stDataFrame"] { width: 100%; }
     
     /* Header Cells */
     [data-testid="stDataFrame"] [role="columnheader"] {
@@ -152,10 +197,8 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
     PLY_THICK = 17
     TOTAL_H = TOTAL_TIMBER_H + PLY_THICK
     
-    # 1. REMOVED TITLE
-    
     ax_front.set_xlim(-300, base_length + 300)
-    ax_front.set_ylim(-100, 200) # Increased top limit to fit dimensions above
+    ax_front.set_ylim(-100, 200) 
     ax_front.axis('off')
 
     # --- 1. Draw Structure (Bearers & Fascia) ---
@@ -177,7 +220,7 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
             b_left_edge = centers[i] + (BEARER_W / 2)
             b_right_edge = centers[i+1] - (BEARER_W / 2)
             
-            # Position ABOVE the Plywood (Total H is ~107mm, place this at 135mm)
+            # Position ABOVE the Plywood
             dim_y = TOTAL_H + 28 
             
             ax_front.annotate("", xy=(b_left_edge, dim_y), xytext=(b_right_edge, dim_y), 
@@ -185,7 +228,6 @@ def draw_pod_diagram(base_width, base_length, centers, panels, title, gap_val, c
             
             mid_gap = (b_left_edge + b_right_edge) / 2
             ax_front.text(mid_gap, dim_y + 10, f"{gap_val:.0f}", ha='center', va='bottom', fontsize=8, color='red', fontweight='bold')
-
 
     # --- 3. Draw Plywood Panels ---
     sorted_x_keys = sorted(front_view_segments.keys())
@@ -219,7 +261,6 @@ def split_panel_length(total_len, width, start_x, row_name, sheet_max=2400):
         cut_len = min(remaining, sheet_max)
         table_rows.append({
             "Qty": 1,
-            # Force No Decimals (.0f)
             "Size [mm]": f"{cut_len:.0f} x {width:.0f}", 
             "raw_w": width,
             "raw_l": cut_len
